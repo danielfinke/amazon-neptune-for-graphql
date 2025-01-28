@@ -16,6 +16,11 @@ import {gql} from 'graphql-tag'
 import { loggerInfo, yellow } from "./logger.js";
 
 let quiet = false;
+
+const scalarTypes = [
+    // https://docs.aws.amazon.com/appsync/latest/devguide/scalars.html#graph-ql-base-scalars
+    'ID', 'String', 'Int', 'Float', 'Boolean'
+];
 const typesToAdd = [];
 const queriesToAdd = [];
 const mutationsToAdd = [];
@@ -254,12 +259,19 @@ function nullable(type) {
 
 
 function isScalar(type) {
-    const scalarTypes = ['String', 'Int', 'Float', 'Boolean', 'ID'];
     return type.kind === 'NamedType' && scalarTypes.includes(type.name.value);
 }
 
 
+function importScalarDefs(schemaModel) {
+    const scalarDefs = schemaModel.definitions.filter(def => def.kind === 'ScalarTypeDefinition');
+    scalarTypes.push(...scalarDefs.map(def => def.name.value));
+}
+
+
 function inferGraphDatabaseDirectives(schemaModel) {
+    importScalarDefs(schemaModel);
+
     schemaModel.definitions.forEach(def => {
         if (def.kind == 'ObjectTypeDefinition') {
             if (!(def.name.value == 'Query' || def.name.value == 'Mutation')) {
