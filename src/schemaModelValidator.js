@@ -176,7 +176,13 @@ function addEdge(from, to, edgeName) {
 }
 
 
-function addFilterOptionsArguments(field) {
+function addFilterOptionsArguments(field, type) {
+    let filterTypeName = type.name.value;
+
+    if (!isScalar(type)) {
+        filterTypeName += 'Input';
+    }
+
     // filter
     field.arguments.push({
         kind: 'InputValueDefinition',
@@ -188,7 +194,7 @@ function addFilterOptionsArguments(field) {
             kind: 'NamedType',
             name: {
                 kind: 'Name',
-                value: field.type.type.name.value + 'Input'
+                value: filterTypeName
             }
         }
     });
@@ -254,15 +260,10 @@ function isScalar(type) {
 
 
 function inferGraphDatabaseDirectives(schemaModel) {
-    
-    var currentType = '';
-    let referencedType = '';
-    let edgeName = '';
-
     schemaModel.definitions.forEach(def => {
         if (def.kind == 'ObjectTypeDefinition') {
             if (!(def.name.value == 'Query' || def.name.value == 'Mutation')) {
-                currentType = def.name.value;
+                const currentType = def.name.value;
 
                 // Only add _id field to the object type if it doesn't have an ID field already
                 if (!getIdField(def)) {
@@ -274,32 +275,26 @@ function inferGraphDatabaseDirectives(schemaModel) {
 
                 // add relationships
                 def.fields.forEach(field => {                    
-                    if (field.type.type !== undefined) {
-                        if (field.type.type.kind === 'NamedType' && field.type.type.name.value !== 'ID')
-                        {
-                            try {
-                                if (field.type.kind === 'ListType')
-                                    addFilterOptionsArguments(field);
-                            }
-                            catch {}
+                    // Discard any outer non-null declaration
+                    const type = nullable(field.type);
+                    let referencedType;
 
-                            try {
-                                referencedType = field.type.type.name.value;
-                                edgeName = referencedType + 'Edge';
-                                loggerInfo("Infer graph database directive in type: " + yellow(currentType) + " field: " + yellow(field.name.value) + " referenced type: " + yellow(referencedType) + " graph relationship: " + yellow(edgeName));
-                                addRelationshipDirective(field, edgeName, 'OUT');
-                                addEdge(currentType, referencedType, edgeName);
-                                if (!edgesTypeToAdd.includes(edgeName)) edgesTypeToAdd.push(edgeName);                                
-                            }                 
-                            catch {}
+                    if (type.kind === 'ListType') {
+                        // Discard any non-null declaration on element type
+                        const elementType = nullable(type.type);
+                        referencedType = elementType.name.value;
+
+                        // Discard nested lists (e.g. `[[String]]`)
+                        if (elementType.kind === 'NamedType') {
+                            addFilterOptionsArguments(field, elementType);
                         }
-                    } else if (field.type.name.value !== 'String' && 
-                               field.type.name.value !== 'Int' && 
-                               field.type.name.value !== 'Float' && 
-                               field.type.name.value !== 'Boolean') {
-                            
-                        referencedType = field.type.name.value;
-                        edgeName = referencedType + 'Edge';
+                    } else {
+                        referencedType = type.name.value;
+                    }
+
+                    // Is the type only representable with an edge?
+                    if (!isScalar(type)) {
+                        const edgeName = referencedType + 'Edge';
                         loggerInfo("Infer graph database directive in type: " + yellow(currentType) + " field: " + yellow(field.name.value) + " referenced type: " + yellow(referencedType) + " graph relationship: " + yellow(edgeName));
                         addRelationshipDirective(field, edgeName, 'OUT');
                         addEdge(currentType, referencedType, edgeName);
