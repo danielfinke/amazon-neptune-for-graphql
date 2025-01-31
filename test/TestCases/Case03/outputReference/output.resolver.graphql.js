@@ -10,12 +10,12 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 */
 
-const { astFromValue, buildASTSchema, print, typeFromAST } = require('graphql');
+const { astFromValue, buildASTSchema, typeFromAST } = require('graphql');
 const gql = require('graphql-tag'); // GraphQL library to parse the GraphQL query
 
 const useCallSubquery = false;
 
-// 2025-01-30T20:38:00.829Z
+// 2025-01-31T06:45:12.263Z
 
 const schemaDataModelJSON = '{"kind":"Document","definitions":[{"kind":"ObjectTypeDefinition","name":{"kind":"Name","value":"Todo"},"interfaces":[],"directives":[],"fields":[{"kind":"FieldDefinition","name":{"kind":"Name","value":"_id"},"arguments":[],"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"id"},"arguments":[]}]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"name"},"arguments":[],"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"description"},"arguments":[],"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"priority"},"arguments":[],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"status"},"arguments":[],"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"comments"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"filter"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentInput"}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"options"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Options"}},"directives":[]}],"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Comment"}}},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"relationship"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"StringValue","value":"CommentEdge","block":false}},{"kind":"Argument","name":{"kind":"Name","value":"direction"},"value":{"kind":"EnumValue","value":"OUT"}}]}]},{"kind":"FieldDefinition","description":{"kind":"StringValue","value":"The best `Comment`, excluding the owner\'s","block":false},"name":{"kind":"Name","value":"bestComment"},"arguments":[],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Comment"}},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"relationship"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"StringValue","value":"CommentEdge","block":false}},{"kind":"Argument","name":{"kind":"Name","value":"direction"},"value":{"kind":"EnumValue","value":"OUT"}}]}]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"commentEdge"},"arguments":[],"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentEdge"}},"directives":[]}]},{"kind":"ObjectTypeDefinition","description":{"kind":"StringValue","value":"Comments on `Todo`s, including the owner\'s and others\'","block":false},"name":{"kind":"Name","value":"Comment"},"interfaces":[],"directives":[],"fields":[{"kind":"FieldDefinition","name":{"kind":"Name","value":"_id"},"arguments":[],"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"id"},"arguments":[]}]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"id"},"arguments":[],"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"content"},"arguments":[],"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"directives":[]}]},{"kind":"InputObjectTypeDefinition","name":{"kind":"Name","value":"Options"},"directives":[],"fields":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"limit"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"directives":[]}]},{"kind":"InputObjectTypeDefinition","name":{"kind":"Name","value":"TodoInput"},"directives":[],"fields":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"_id"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"id"},"arguments":[]}]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"name"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"description"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"priority"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"status"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"directives":[]}]},{"kind":"ObjectTypeDefinition","name":{"kind":"Name","value":"CommentEdge"},"interfaces":[],"directives":[],"fields":[{"kind":"FieldDefinition","name":{"kind":"Name","value":"_id"},"arguments":[],"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"id"},"arguments":[]}]}]},{"kind":"InputObjectTypeDefinition","name":{"kind":"Name","value":"CommentInput"},"directives":[],"fields":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"_id"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"id"},"arguments":[]}]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"id"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"content"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"directives":[]}]},{"kind":"InputObjectTypeDefinition","name":{"kind":"Name","value":"Options"},"directives":[],"fields":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"limit"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"directives":[]}]},{"kind":"ObjectTypeDefinition","name":{"kind":"Name","value":"Query"},"interfaces":[],"directives":[],"fields":[{"kind":"FieldDefinition","name":{"kind":"Name","value":"getNodeTodo"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"filter"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"TodoInput"}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"options"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Options"}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Todo"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"getNodeTodos"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"filter"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"TodoInput"}},"directives":[]}],"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Todo"}}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"getNodeComment"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"filter"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentInput"}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"options"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Options"}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Comment"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"getNodeComments"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"filter"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentInput"}},"directives":[]}],"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Comment"}}},"directives":[]}]},{"kind":"ObjectTypeDefinition","name":{"kind":"Name","value":"Mutation"},"interfaces":[],"directives":[],"fields":[{"kind":"FieldDefinition","name":{"kind":"Name","value":"createNodeTodo"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"input"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TodoInput"}}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Todo"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"updateNodeTodo"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"input"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TodoInput"}}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Todo"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"deleteNodeTodo"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"_id"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"connectNodeTodoToNodeCommentEdgeCommentEdge"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"from_id"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"to_id"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentEdge"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"deleteEdgeCommentEdgeFromTodoToComment"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"from_id"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"to_id"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"createNodeComment"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"input"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentInput"}}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Comment"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"updateNodeComment"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"input"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentInput"}}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Comment"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"deleteNodeComment"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"_id"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}},"directives":[]}]},{"kind":"SchemaDefinition","directives":[],"operationTypes":[{"kind":"OperationTypeDefinition","operation":"query","type":{"kind":"NamedType","name":{"kind":"Name","value":"Query"}}},{"kind":"OperationTypeDefinition","operation":"mutation","type":{"kind":"NamedType","name":{"kind":"Name","value":"Mutation"}}}]}],"loc":{"start":0,"end":1460}}';
     
@@ -50,12 +50,21 @@ function resolveGraphDBQueryFromAppSyncEvent(event) {
                 ? gql`${event.selectionSetGraphQL}`.definitions[0].selectionSet
                 : undefined,
     };
-    const opSelectionSet = {
-        kind: 'SelectionSet',
-        selections: [fieldNode]
+    const obj = {
+        kind: 'Document',
+        definitions: [
+            {
+                kind: 'OperationDefinition',
+                operation: 'query',
+                selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [fieldNode]
+                }
+            }
+        ]
     };
 
-    const graphQuery = resolveGraphDBQuery(print(opSelectionSet));
+    const graphQuery = resolveGraphDBQuery(obj);
     return graphQuery;
 }
   
@@ -1051,14 +1060,27 @@ function resolveGremlinQuery(obj, querySchemaInfo) {
 }
 
 
-// Function takes the graphql query and output the graphDB query
-function resolveGraphDBQuery(query) {
+function parseQueryInput(queryObjOrStr) {
+    // Backwards compatibility
+    if (typeof queryObjOrStr === 'string') {
+        return gql(queryObjOrStr);
+    }
+
+    // Already in AST format
+    return queryObjOrStr;
+}
+
+
+/**
+ * Accepts a GraphQL document or query string and outputs the graphDB query.
+ *
+ * @param {(Object|string)} queryObjOrStr the GraphQL document containing an operation to resolve
+ * @returns {string}
+ */
+function resolveGraphDBQuery(queryObjOrStr) {
     let executeQuery =  { query:'', parameters: {}, language: 'opencypher', refactorOutput: null };
-        
-    // create a gql object from the query, gql is GraphQL Query Language
-    const obj = gql`
-        ${query}
-    `;
+
+    const obj = parseQueryInput(queryObjOrStr);
 
     const querySchemaInfo = getSchemaQueryInfo(obj.definitions[0].selectionSet.selections[0].name.value);
 
