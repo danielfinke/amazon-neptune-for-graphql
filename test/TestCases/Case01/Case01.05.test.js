@@ -6,7 +6,7 @@ describe('AppSync resolver', () => {
     let resolverModule;
 
     beforeAll(async () => {
-        resolverModule = await loadResolver('./TestCases/Case01/output/output.resolver.graphql.cjs');
+        resolverModule = await loadResolver('./TestCases/Case01/output/output.resolver.graphql.js');
     });
 
     test('should resolve queries with a filter', () => {
@@ -52,6 +52,22 @@ describe('AppSync resolver', () => {
             query: 'MATCH (getNodeAirport_Airport:`airport`)\n' +
                 'RETURN {city: getNodeAirport_Airport.`city`} LIMIT 1',
             parameters: {},
+            language: 'opencypher',
+            refactorOutput: null
+        });
+    });
+
+    test('should resolve queries with a filter that contains numeric and string values', () => {
+        const result = resolve({
+            field: 'getNodeAirports',
+            arguments: { filter: { country: 'US', runways: 3 } },
+            selectionSetGraphQL: '{ city }'
+        });
+
+        expect(result).toEqual({
+            query: 'MATCH (getNodeAirports_Airport:`airport`{country: $getNodeAirports_Airport_country, runways: $getNodeAirports_Airport_runways})\n' +
+                'RETURN collect({city: getNodeAirports_Airport.`city`})',
+            parameters: { getNodeAirports_Airport_country: 'US',  getNodeAirports_Airport_runways: 3},
             language: 'opencypher',
             refactorOutput: null
         });

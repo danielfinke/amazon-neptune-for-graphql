@@ -10,12 +10,13 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 */
 
-const { astFromValue, buildASTSchema, typeFromAST } = require('graphql');
-const gql = require('graphql-tag'); // GraphQL library to parse the GraphQL query
+import assert from 'node:assert';
+import { astFromValue, buildASTSchema, isInputType, typeFromAST } from 'graphql';
+import { gql } from 'graphql-tag'; // GraphQL library to parse the GraphQL query
 
 const useCallSubquery = false;
 
-// 2025-01-31T06:45:12.263Z
+// 2025-02-09T23:01:43.826Z
 
 const schemaDataModelJSON = '{"kind":"Document","definitions":[{"kind":"ObjectTypeDefinition","name":{"kind":"Name","value":"Todo"},"interfaces":[],"directives":[],"fields":[{"kind":"FieldDefinition","name":{"kind":"Name","value":"_id"},"arguments":[],"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"id"},"arguments":[]}]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"name"},"arguments":[],"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"description"},"arguments":[],"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"priority"},"arguments":[],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"status"},"arguments":[],"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"comments"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"filter"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentInput"}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"options"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Options"}},"directives":[]}],"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Comment"}}},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"relationship"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"StringValue","value":"CommentEdge","block":false}},{"kind":"Argument","name":{"kind":"Name","value":"direction"},"value":{"kind":"EnumValue","value":"OUT"}}]}]},{"kind":"FieldDefinition","description":{"kind":"StringValue","value":"The best `Comment`, excluding the owner\'s","block":false},"name":{"kind":"Name","value":"bestComment"},"arguments":[],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Comment"}},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"relationship"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"StringValue","value":"CommentEdge","block":false}},{"kind":"Argument","name":{"kind":"Name","value":"direction"},"value":{"kind":"EnumValue","value":"OUT"}}]}]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"commentEdge"},"arguments":[],"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentEdge"}},"directives":[]}]},{"kind":"ObjectTypeDefinition","description":{"kind":"StringValue","value":"Comments on `Todo`s, including the owner\'s and others\'","block":false},"name":{"kind":"Name","value":"Comment"},"interfaces":[],"directives":[],"fields":[{"kind":"FieldDefinition","name":{"kind":"Name","value":"_id"},"arguments":[],"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"id"},"arguments":[]}]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"id"},"arguments":[],"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"content"},"arguments":[],"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"directives":[]}]},{"kind":"InputObjectTypeDefinition","name":{"kind":"Name","value":"Options"},"directives":[],"fields":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"limit"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"directives":[]}]},{"kind":"InputObjectTypeDefinition","name":{"kind":"Name","value":"TodoInput"},"directives":[],"fields":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"_id"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"id"},"arguments":[]}]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"name"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"description"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"priority"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"status"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"directives":[]}]},{"kind":"ObjectTypeDefinition","name":{"kind":"Name","value":"CommentEdge"},"interfaces":[],"directives":[],"fields":[{"kind":"FieldDefinition","name":{"kind":"Name","value":"_id"},"arguments":[],"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"id"},"arguments":[]}]}]},{"kind":"InputObjectTypeDefinition","name":{"kind":"Name","value":"CommentInput"},"directives":[],"fields":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"_id"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"id"},"arguments":[]}]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"id"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"content"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"directives":[]}]},{"kind":"InputObjectTypeDefinition","name":{"kind":"Name","value":"Options"},"directives":[],"fields":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"limit"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"directives":[]}]},{"kind":"ObjectTypeDefinition","name":{"kind":"Name","value":"Query"},"interfaces":[],"directives":[],"fields":[{"kind":"FieldDefinition","name":{"kind":"Name","value":"getNodeTodo"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"filter"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"TodoInput"}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"options"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Options"}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Todo"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"getNodeTodos"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"filter"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"TodoInput"}},"directives":[]}],"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Todo"}}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"getNodeComment"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"filter"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentInput"}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"options"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Options"}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Comment"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"getNodeComments"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"filter"},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentInput"}},"directives":[]}],"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Comment"}}},"directives":[]}]},{"kind":"ObjectTypeDefinition","name":{"kind":"Name","value":"Mutation"},"interfaces":[],"directives":[],"fields":[{"kind":"FieldDefinition","name":{"kind":"Name","value":"createNodeTodo"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"input"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TodoInput"}}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Todo"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"updateNodeTodo"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"input"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TodoInput"}}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Todo"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"deleteNodeTodo"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"_id"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"connectNodeTodoToNodeCommentEdgeCommentEdge"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"from_id"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"to_id"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentEdge"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"deleteEdgeCommentEdgeFromTodoToComment"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"from_id"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[]},{"kind":"InputValueDefinition","name":{"kind":"Name","value":"to_id"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"createNodeComment"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"input"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentInput"}}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Comment"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"updateNodeComment"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"input"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentInput"}}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Comment"}},"directives":[]},{"kind":"FieldDefinition","name":{"kind":"Name","value":"deleteNodeComment"},"arguments":[{"kind":"InputValueDefinition","name":{"kind":"Name","value":"_id"},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},"directives":[]}],"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}},"directives":[]}]},{"kind":"SchemaDefinition","directives":[],"operationTypes":[{"kind":"OperationTypeDefinition","operation":"query","type":{"kind":"NamedType","name":{"kind":"Name","value":"Query"}}},{"kind":"OperationTypeDefinition","operation":"mutation","type":{"kind":"NamedType","name":{"kind":"Name","value":"Mutation"}}}]}],"loc":{"start":0,"end":1460}}';
     
@@ -24,15 +25,20 @@ const schemaDataModel = JSON.parse(schemaDataModelJSON);
 const schema = buildASTSchema(schemaDataModel, { assumeValidSDL: true });
 
 
-function resolveGraphDBQueryFromAppSyncEvent(event) {        
+export function resolveGraphDBQueryFromAppSyncEvent(event) {
     const fieldDef = getFieldDef(event.field);
 
+    assert(fieldDef);
+
     const args = [];
-    for (const inputDef of fieldDef.arguments) {
+    for (const inputDef of fieldDef.arguments ?? []) {
         const value = event.arguments[inputDef.name.value];
 
         if (value) {
             const inputType = typeFromAST(schema, inputDef.type);
+
+            assert(isInputType(inputType));
+
             args.push({
                 kind: 'Argument',
                 name: { kind: 'Name', value: inputDef.name.value },
@@ -70,7 +76,7 @@ function resolveGraphDBQueryFromAppSyncEvent(event) {
   
   
 // eslint-disable-next-line no-unused-vars
-function resolveGraphDBQueryFromApolloQueryEvent(event) {
+export function resolveGraphDBQueryFromApolloQueryEvent(event) {
   // TODO
 }
 
@@ -100,8 +106,8 @@ function getTypeDefs(typeNameOrNames) {
 function getFieldDef(fieldName) {
     const rootTypeDefs = getRootTypeDefs();
 
-    for (const rootDef of rootTypeDefs) {
-        const fieldDef = rootDef.fields.find(def => def.name.value === fieldName);
+    for (const rootTypeDef of rootTypeDefs) {
+        const fieldDef = rootTypeDef.fields?.find(def => def.name.value === fieldName);
 
         if (fieldDef) {
             return fieldDef;
@@ -750,6 +756,9 @@ function transformFunctionInputParameters(fields, schemaInfo) {
         fields.forEach(field => {
             if (field.name.value === arg.name) {
                 let value = field.value.value;
+                if (field.value.kind === 'IntValue' || field.value.kind === 'FloatValue') {
+                    value = Number(value);
+                }
                 if (arg.name === schemaInfo.graphDBIdArgName) {
                     r.graphIdValue = value
                 } else if (arg.alias != null) {
@@ -975,7 +984,7 @@ function gremlinElementToJson(o, fieldsAlias) {
 }
 
 
-function refactorGremlinqueryOutput(queryResult, fieldsAlias) {
+export function refactorGremlinqueryOutput(queryResult, fieldsAlias) {
   
     //const r = JSON.parse(queryResult).result.data;
     const r = queryResult;
@@ -1075,9 +1084,9 @@ function parseQueryInput(queryObjOrStr) {
  * Accepts a GraphQL document or query string and outputs the graphDB query.
  *
  * @param {(Object|string)} queryObjOrStr the GraphQL document containing an operation to resolve
- * @returns {string}
+ * @returns {Object}
  */
-function resolveGraphDBQuery(queryObjOrStr) {
+export function resolveGraphDBQuery(queryObjOrStr) {
     let executeQuery =  { query:'', parameters: {}, language: 'opencypher', refactorOutput: null };
 
     const obj = parseQueryInput(queryObjOrStr);
@@ -1101,6 +1110,3 @@ function resolveGraphDBQuery(queryObjOrStr) {
     
     return executeQuery;
 }
-
-
-module.exports = { resolveGraphDBQueryFromAppSyncEvent, resolveGraphDBQueryFromApolloQueryEvent, resolveGraphDBQuery, refactorGremlinqueryOutput };

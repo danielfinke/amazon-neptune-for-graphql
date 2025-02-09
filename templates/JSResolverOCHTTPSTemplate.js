@@ -10,9 +10,9 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 */
 
-const assert = require('node:assert');
-const { astFromValue, buildASTSchema, isInputType, typeFromAST } = require('graphql');
-const gql = require('graphql-tag'); // GraphQL library to parse the GraphQL query
+import assert from 'node:assert';
+import { astFromValue, buildASTSchema, isInputType, typeFromAST } from 'graphql';
+import { gql } from 'graphql-tag'; // GraphQL library to parse the GraphQL query
 
 const useCallSubquery = false;
 
@@ -25,7 +25,7 @@ const schemaDataModel = JSON.parse(schemaDataModelJSON);
 const schema = buildASTSchema(schemaDataModel, { assumeValidSDL: true });
 
 
-function resolveGraphDBQueryFromAppSyncEvent(event) {        
+export function resolveGraphDBQueryFromAppSyncEvent(event) {
     const fieldDef = getFieldDef(event.field);
 
     assert(fieldDef);
@@ -76,7 +76,7 @@ function resolveGraphDBQueryFromAppSyncEvent(event) {
   
   
 // eslint-disable-next-line no-unused-vars
-function resolveGraphDBQueryFromApolloQueryEvent(event) {
+export function resolveGraphDBQueryFromApolloQueryEvent(event) {
   // TODO
 }
 
@@ -756,6 +756,9 @@ function transformFunctionInputParameters(fields, schemaInfo) {
         fields.forEach(field => {
             if (field.name.value === arg.name) {
                 let value = field.value.value;
+                if (field.value.kind === 'IntValue' || field.value.kind === 'FloatValue') {
+                    value = Number(value);
+                }
                 if (arg.name === schemaInfo.graphDBIdArgName) {
                     r.graphIdValue = value
                 } else if (arg.alias != null) {
@@ -981,7 +984,7 @@ function gremlinElementToJson(o, fieldsAlias) {
 }
 
 
-function refactorGremlinqueryOutput(queryResult, fieldsAlias) {
+export function refactorGremlinqueryOutput(queryResult, fieldsAlias) {
   
     //const r = JSON.parse(queryResult).result.data;
     const r = queryResult;
@@ -1083,7 +1086,7 @@ function parseQueryInput(queryObjOrStr) {
  * @param {(Object|string)} queryObjOrStr the GraphQL document containing an operation to resolve
  * @returns {Object}
  */
-function resolveGraphDBQuery(queryObjOrStr) {
+export function resolveGraphDBQuery(queryObjOrStr) {
     let executeQuery =  { query:'', parameters: {}, language: 'opencypher', refactorOutput: null };
 
     const obj = parseQueryInput(queryObjOrStr);
@@ -1107,6 +1110,3 @@ function resolveGraphDBQuery(queryObjOrStr) {
     
     return executeQuery;
 }
-
-
-module.exports = { resolveGraphDBQueryFromAppSyncEvent, resolveGraphDBQueryFromApolloQueryEvent, resolveGraphDBQuery, refactorGremlinqueryOutput };
